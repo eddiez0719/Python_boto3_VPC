@@ -46,12 +46,12 @@ nat_gw = ec2_client.create_nat_gateway(
    AllocationId=addr['AllocationId'])
 print('the nat gatway id is: '+nat_gw['NatGateway']['NatGatewayId'])
 
-print('Wait for 60 seconds until nat gateway is ready....')
-time.sleep(60)
+print('Wait for 30 seconds until nat gateway is ready....')
+time.sleep(30)
 
 # create a route table and a private route
 pri_route_table = vpc.create_route_table()
-pri_route = route_table.create_route(
+pri_route = pri_route_table.create_route(
     DestinationCidrBlock='0.0.0.0/0',
     NatGatewayId=nat_gw['NatGateway']['NatGatewayId']
 )
@@ -59,15 +59,16 @@ print(pri_route_table.id)
 
 # associate the route table with public subnet
 route_table_association = route_table.associate_with_subnet(
-    SubnetId='pub_subnet.id',
-    GatewayId='ig.id'
+    SubnetId=pub_subnet.id,
+   # GatewayId='ig.id'
 )
 #route_table.associate_with_subnet(SubnetId=pub_subnet.id)
 
 # associate the private route table with private subnet
-
-
-
+route_table_association = pri_route_table.associate_with_subnet(
+    SubnetId=pri_subnet.id,
+   # GatewayId='ig.id'
+)
 
 #pri_route_table.associate_with_subnet(SubnetId=pri_subnet.id)
 
@@ -90,7 +91,7 @@ instance = ec2.create_instances(
    MinCount=1,
    KeyName='ec2-keypair',
    
-   NetworkInterfaces=[{'SubnetId': subnet.id, 'DeviceIndex':0, 'AssociatePublicIpAddress': True, 'Groups': [sec_group.group_id]}]
+   NetworkInterfaces=[{'SubnetId': pub_subnet.id, 'DeviceIndex':0, 'AssociatePublicIpAddress': True, 'Groups': [sec_group.group_id]}]
 
 )
 
