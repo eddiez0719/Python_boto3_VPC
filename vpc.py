@@ -39,8 +39,11 @@ print(route_table.id)
 nat_gw = ec2_client.create_nat_gateway(SubnetId=pub_subnet.id,
                                        AllocationId=addr['AllocationId'])
 print('the nat gatway id is: ' + nat_gw['NatGateway']['NatGatewayId'])
+<<<<<<< HEAD
 
 #s = True
+=======
+>>>>>>> 3c053811eaffc755dab5f0f2c729c0217fac9f29
 
 #while s:
 #    if (nat_gw['NatGateway']['State']) != 'available':
@@ -88,6 +91,13 @@ print(sec_group.id)
 # create a key pair
 keypair = ec2_client.create_key_pair(KeyName='python-keypair')
 
+<<<<<<< HEAD
+=======
+private_key_file = open('python-keypair.pem', "w")
+private_key_file.write(keypair['KeyMaterial'])
+private_key_file.close
+
+>>>>>>> 3c053811eaffc755dab5f0f2c729c0217fac9f29
 # create an instance in public subnet
 instance = ec2.create_instances(ImageId='ami-075a72b1992cb0687',
                                 InstanceType='t2.micro',
