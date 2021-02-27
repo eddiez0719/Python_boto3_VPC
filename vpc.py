@@ -45,10 +45,11 @@ nat_gw_id = nat_gw['NatGateway']['NatGatewayId']
 print('the nat gatway id is: ' + nat_gw_id)
 
 try:
-  print('check nat gateway status, wait it to be available")
-  ec2_client.get_waiter('nat_gateway_available').wait(NatGatewayIds=[nat_gw_id])
+    print('check nat gateway status, wait it to be available')
+    ec2_client.get_waiter('nat_gateway_available').wait(
+        NatGatewayIds=[nat_gw_id])
 except botocore.exceptions.WaiterError as e:
-  print(e)
+    print(e)
 
 # create a route table and a private route
 pri_route_table = vpc.create_route_table()
