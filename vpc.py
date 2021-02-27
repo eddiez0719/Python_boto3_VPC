@@ -39,11 +39,8 @@ print(route_table.id)
 nat_gw = ec2_client.create_nat_gateway(SubnetId=pub_subnet.id,
                                        AllocationId=addr['AllocationId'])
 print('the nat gatway id is: ' + nat_gw['NatGateway']['NatGatewayId'])
-<<<<<<< HEAD
 
 #s = True
-=======
->>>>>>> 3c053811eaffc755dab5f0f2c729c0217fac9f29
 
 #while s:
 #    if (nat_gw['NatGateway']['State']) != 'available':
