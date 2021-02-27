@@ -37,9 +37,6 @@ route = route_table.create_route(
 )
 print(route_table.id)
 
-#print('Wait for 120 seconds until public route table is ready....')
-#time.sleep(120)
-
 # create a nat gateway
 nat_gw = ec2_client.create_nat_gateway(
    SubnetId=pub_subnet.id, 
@@ -83,13 +80,16 @@ sec_group.authorize_ingress(
 )
 print(sec_group.id)
 
+# create a key pair
+keypair = ec2_client.create_key_pair(KeyName='python-keypair')
+
 # create an instance in public subnet
 instance = ec2.create_instances(
    ImageId='ami-075a72b1992cb0687', 
    InstanceType='t2.micro', 
    MaxCount=1, 
    MinCount=1,
-   KeyName='ec2-keypair',
+   KeyName='python-keypair',
    
    NetworkInterfaces=[{'SubnetId': pub_subnet.id, 'DeviceIndex':0, 'AssociatePublicIpAddress': True, 'Groups': [sec_group.group_id]}]
 
@@ -101,7 +101,7 @@ instance = ec2.create_instances(
    InstanceType='t2.micro', 
    MaxCount=1, 
    MinCount=1,
-   KeyName='ec2-keypair',
+   KeyName='python-keypair',
    
    NetworkInterfaces=[{'SubnetId': pri_subnet.id, 'DeviceIndex':0, 'AssociatePublicIpAddress': False, 'Groups': [sec_group.group_id]}]
 
