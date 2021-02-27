@@ -1,5 +1,6 @@
 import time
 import boto3
+import botocore
 
 ec2 = boto3.resource('ec2')
 ec2_client = boto3.client('ec2')
@@ -38,20 +39,17 @@ print(route_table.id)
 # create a nat gateway
 nat_gw = ec2_client.create_nat_gateway(SubnetId=pub_subnet.id,
                                        AllocationId=addr['AllocationId'])
-print('the nat gatway id is: ' + nat_gw['NatGateway']['NatGatewayId'])
 
-#s = True
+nat_gw_id = nat_gw['NatGateway']['NatGatewayId']
 
-#while s:
-#    if (nat_gw['NatGateway']['State']) != 'available':
-#        print(nat_gw['NatGateway']['State'])
-#        time.sleep(20)
-#    else:
-#        print('Nat Gateway is ready')
-#        s = False
+print('the nat gatway id is: ' + nat_gw_id)
 
-time.sleep(300)
-print(nat_gw['NatGateway']['State'])
+try:
+    print('check nat gateway status, wait it to be available')
+    ec2_client.get_waiter('nat_gateway_available').wait(
+        NatGatewayIds=[nat_gw_id])
+except botocore.exceptions.WaiterError as e:
+    print(e)
 
 # create a route table and a private route
 pri_route_table = vpc.create_route_table()
@@ -88,13 +86,10 @@ print(sec_group.id)
 # create a key pair
 keypair = ec2_client.create_key_pair(KeyName='python-keypair')
 
-<<<<<<< HEAD
-=======
 private_key_file = open('python-keypair.pem', "w")
 private_key_file.write(keypair['KeyMaterial'])
 private_key_file.close
 
->>>>>>> 3c053811eaffc755dab5f0f2c729c0217fac9f29
 # create an instance in public subnet
 instance = ec2.create_instances(ImageId='ami-075a72b1992cb0687',
                                 InstanceType='t2.micro',
